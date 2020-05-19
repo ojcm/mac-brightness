@@ -1,9 +1,5 @@
 /*
     Set Mac Keyboard Backlight Brightness
-
-    Usage:
-        gcc -std=c99 -o kbrightness keyboard-brightness.c -framework IOKit -framework ApplicationServices
-        ./kbrightness 0.8
 */
 
 enum {
