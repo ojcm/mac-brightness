@@ -14,13 +14,10 @@ enum {
 #include <CoreFoundation/CoreFoundation.h>
 #include "keyboard-brightness/rust_keyboard_brightness.h"
 
-static io_connect_t dataPort = 0;
-
 io_connect_t getDataPort(void) {
+    io_connect_t      dataPort;
     kern_return_t     kr;
     io_service_t      serviceObject;
-
-    if (dataPort) return dataPort;
 
     // Look up a registered IOService object whose class is AppleLMUController
     serviceObject = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("AppleLMUController"));
@@ -42,7 +39,7 @@ io_connect_t getDataPort(void) {
 }
 
 float getKeyboardBrightness(void) {
-    float f;
+    float brightness;
     kern_return_t kr;
 
     uint64_t inputCount = 1;
@@ -62,33 +59,27 @@ float getKeyboardBrightness(void) {
         &outputCount
     );
 
-    out_brightness = outputValues[0];
-
     if (kr != KERN_SUCCESS) {
         printf("getKeyboardBrightness() error\n");
         return 0;
     }
 
-    f = out_brightness;
-    f /= 0xfff;
-    return (float)f;
+    brightness = outputValues[0];
+    brightness /= 0xfff;
+    return (float)brightness;
 }
 
-void setKeyboardBrightness(float in) {
+void setKeyboardBrightness(float new_brightness) {
     kern_return_t kr;
 
-    uint64_t inputCount  = 2;
-    uint64_t inputValues[2];
-    uint64_t in_unknown = 0;
-    uint64_t in_brightness = in * 0xfff;
-
-    inputValues[0] = in_unknown;
-    inputValues[1] = in_brightness;
+    uint64_t inputCount = 2;
+    uint64_t inputValues[2] = {
+        0, // Unknown input
+        new_brightness * 0xfff
+    };
 
     uint32_t outputCount = 1;
     uint64_t outputValues[1];
-
-    uint32_t out_brightness;
 
     kr = IOConnectCallScalarMethod(
         getDataPort(),
@@ -98,8 +89,6 @@ void setKeyboardBrightness(float in) {
         outputValues,
         &outputCount
     );
-
-    out_brightness = outputValues[0];
 
     if (kr != KERN_SUCCESS) {
         printf("setKeyboardBrightness() error\n");
