@@ -16,6 +16,7 @@ enum {
 #include <mach/mach.h>
 #include <IOKit/IOKitLib.h>
 #include <CoreFoundation/CoreFoundation.h>
+#include "keyboard-brightness/rust_keyboard_brightness.h"
 
 static io_connect_t dataPort = 0;
 
@@ -117,7 +118,7 @@ int main(int argc, char **argv) {
     if (argc > 1 && sscanf(argv[1], "%f", &brightness) == 1) {
         setKeyboardBrightness(brightness);
     } else {
-        printf("%f", getKeyboardBrightness());
+        print_brightness(getKeyboardBrightness());
     }
     exit(0);
 }
