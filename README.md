@@ -7,6 +7,19 @@ A Rust port of the tools to control Mac brightness from [pirate's repo](https://
 - Only works on pre-2015 Macs
 
 ## Compilation
+### Dependencies
+bindgen, cbindgen.  Install with
+```
+cargo install --force bindgen
+cargo install --force cbindgen
+```
+
+### Generate third-party C library headers for our rust library
+```
+cd keyboard-brightness/src
+bindgen --ctypes-prefix=cty bindings.h > bindings.rs
+```
+
 ### Build the library
 ```
 cd keyboard-brightness
