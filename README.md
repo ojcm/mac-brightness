@@ -8,31 +8,28 @@ A Rust port of the tools to control Mac brightness from [pirate's repo](https://
 
 ## Compilation
 ### Dependencies
-bindgen, cbindgen.  Install with
+If `bindgen` is not installed, then install with:
 ```
 cargo install --force bindgen
-cargo install --force cbindgen
 ```
 
-### Generate third-party C library headers for our rust library
+### Generate third-party C library headers for our Rust library
 ```
 cd keyboard-brightness/src
 bindgen --ctypes-prefix=cty bindings.h > bindings.rs
 ```
 
-### Build the library
+### Build the binary
+It's recommended to disable warnings as the generated `bindings.rs` prompts a lot of warnings.
 ```
 cd keyboard-brightness
-cargo build --release
+RUSTFLAGS=-Awarnings cargo build --release
 ```
 
-### Build the header file
-```
-cd keyboard-brightness
-cbindgen --crate keyboard-brightness --output rust_keyboard_brightness.h --config cbindgen.toml
-```
+## Usage
+### Set keyboard brightness
+Set the brightness with a float value between 0 and 1
+./keyboard-brightness 0.5
 
-### Compile the C source with rust library
-```
-gcc -I./keyboard-brightness/ -o kbrightness keyboard-brightness.c ./keyboard-brightness/target/release/libkeyboard_brightness.a -framework IOKit -framework ApplicationServices
-```
+### Get keyboard brightness
+./keyboard-brightness
