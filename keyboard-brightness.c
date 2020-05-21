@@ -14,37 +14,6 @@ enum {
 #include <CoreFoundation/CoreFoundation.h>
 #include "keyboard-brightness/rust_keyboard_brightness.h"
 
-float getKeyboardBrightness(void) {
-    float brightness;
-    kern_return_t kr;
-
-    uint64_t inputCount = 1;
-    uint64_t inputValues[1] = {0};
-
-    uint32_t outputCount = 1;
-    uint64_t outputValues[1];
-
-    uint32_t out_brightness;
-
-    kr = IOConnectCallScalarMethod(
-        getDataPort(),
-        kGetLEDBrightnessID,
-        inputValues,
-        inputCount,
-        outputValues,
-        &outputCount
-    );
-
-    if (kr != KERN_SUCCESS) {
-        printf("getKeyboardBrightness() error\n");
-        return 0;
-    }
-
-    brightness = outputValues[0];
-    brightness /= 0xfff;
-    return (float)brightness;
-}
-
 void setKeyboardBrightness(float new_brightness) {
     kern_return_t kr;
 
