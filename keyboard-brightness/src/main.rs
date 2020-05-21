@@ -11,11 +11,6 @@ use cty::{c_char};
 const kGetLEDBrightnessID: u32 = 1;
 const kSetLEDBrightnessID: u32 = 2;
 
-#[no_mangle]
-pub extern "C" fn print_brightness(val: f32) {
-    println!("Current brightness: {}", val)
-}
-
 fn getDataPort() -> io_connect_t {
     let mut dataPort: io_connect_t = 0;
 
@@ -34,7 +29,6 @@ fn getDataPort() -> io_connect_t {
     }
 
     // Create a connection to the IOService object
-    // TODO: Not sure swapping mach_task_self() for mach_task_self_ was correct...
     let kr = unsafe{IOServiceOpen(serviceObject, mach_task_self_, 0, &mut dataPort)};
     unsafe{IOObjectRelease(serviceObject)};
 
@@ -45,8 +39,7 @@ fn getDataPort() -> io_connect_t {
     return dataPort;
 }
 
-#[no_mangle]
-pub extern "C" fn getKeyboardBrightness() -> f32 {
+fn getKeyboardBrightness() -> f32 {
     let inputCount: u32 = 1;
     let inputValue: u64 = 0;
 
@@ -73,9 +66,8 @@ pub extern "C" fn getKeyboardBrightness() -> f32 {
     return fBrightness;
 }
 
-#[no_mangle]
-pub extern "C" fn setKeyboardBrightness(new_brightness: f32) {
-    println!("Setting brightness to {}", new_brightness);
+fn setKeyboardBrightness(new_brightness: f32) {
+    println!("Setting brightness: {}", new_brightness);
 
     let inputCount: u32 = 2;
     let inputValues: [u64; 2] = [
@@ -109,7 +101,7 @@ fn main() {
         return;
     }
     if args.len() == 1 {
-        print_brightness(getKeyboardBrightness());
+        println!("Current brightness: {}", getKeyboardBrightness());
         return;
     }
     let brightness = &args[1];
