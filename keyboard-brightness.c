@@ -14,30 +14,6 @@ enum {
 #include <CoreFoundation/CoreFoundation.h>
 #include "keyboard-brightness/rust_keyboard_brightness.h"
 
-io_connect_t getDataPort(void) {
-    io_connect_t      dataPort;
-    kern_return_t     kr;
-    io_service_t      serviceObject;
-
-    // Look up a registered IOService object whose class is AppleLMUController
-    serviceObject = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("AppleLMUController"));
-
-    if (!serviceObject) {
-        printf("Failed to connect to AppleLMUController\n");
-        return 0;
-    }
-
-    // Create a connection to the IOService object
-    kr = IOServiceOpen(serviceObject, mach_task_self(), 0, &dataPort);
-    IOObjectRelease(serviceObject);
-
-    if (kr != KERN_SUCCESS) {
-        printf("Failed to open IoService object\n");
-        return 0;
-    }
-    return dataPort;
-}
-
 float getKeyboardBrightness(void) {
     float brightness;
     kern_return_t kr;
