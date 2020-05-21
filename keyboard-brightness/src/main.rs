@@ -1,5 +1,6 @@
 mod bindings;
 use std::convert::TryInto;
+use std::env;
 use std::ffi::{CString};
 use cty::{c_char};
 use bindings::{
@@ -83,7 +84,7 @@ pub extern "C" fn getKeyboardBrightness() -> f32 {
 
 #[no_mangle]
 pub extern "C" fn setKeyboardBrightness(new_brightness: f32) {
-    // kern_return_t kr;
+    println!("Setting brightness to {}", new_brightness);
 
     let inputCount: u32 = 2;
     let inputValues: [u64; 2] = [
@@ -107,5 +108,22 @@ pub extern "C" fn setKeyboardBrightness(new_brightness: f32) {
     if kr != KERN_SUCCESS.try_into().unwrap() {
         println!("setKeyboardBrightness() error");
         return;
+    }
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 2 {
+        println!("Usage: kbrightness [new brightness]");
+        return;
+    }
+    if args.len() == 1 {
+        print_brightness(getKeyboardBrightness());
+        return;
+    }
+    let brightness = &args[1];
+    match brightness.parse::<f32>(){
+        Ok(b) => setKeyboardBrightness(b),
+        Err(e) => println!("error parsing argument: {}", e),
     }
 }

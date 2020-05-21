@@ -8,7 +8,3 @@ edition = "2018"
 
 [dependencies]
 cty = "0.2.1"
-
-[lib]
-name = "keyboard_brightness"
-crate-type = ["staticlib"]
