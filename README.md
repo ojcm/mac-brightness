@@ -18,7 +18,11 @@ RUSTFLAGS=-Awarnings cargo build --release
 ## Usage
 ### Set keyboard brightness
 Set the brightness with a float value between 0 and 1
+```
 ./keyboard-brightness 0.5
+```
 
 ### Get keyboard brightness
+```
 ./keyboard-brightness
+```

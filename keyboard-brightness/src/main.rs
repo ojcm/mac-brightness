@@ -97,7 +97,7 @@ fn setKeyboardBrightness(new_brightness: f32) {
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() > 2 {
-        println!("Usage: kbrightness [new brightness]");
+        println!("Usage: ./keyboard-brightness [new brightness]");
         return;
     }
     if args.len() == 1 {
