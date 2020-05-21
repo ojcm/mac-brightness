@@ -1,19 +1,12 @@
-mod bindings;
+#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
 use std::convert::TryInto;
 use std::env;
 use std::ffi::{CString};
 use cty::{c_char};
-use bindings::{
-    io_connect_t,
-    IOConnectCallScalarMethod,
-    IOObjectRelease,
-    IOServiceGetMatchingService,
-    IOServiceMatching,
-    IOServiceOpen,
-    KERN_SUCCESS,
-    kIOMasterPortDefault,
-    mach_task_self_
-};
 
 const kGetLEDBrightnessID: u32 = 1;
 const kSetLEDBrightnessID: u32 = 2;
@@ -61,8 +54,6 @@ pub extern "C" fn getKeyboardBrightness() -> f32 {
     // Dangerously assume that we'll never get more than 10 output values.
     let mut outputValues: [u64; 10] = [0; 10];
 
-    let out_brightness: u32;
-
     let kr = unsafe{IOConnectCallScalarMethod(
         getDataPort(),
         kGetLEDBrightnessID,
@@ -77,7 +68,7 @@ pub extern "C" fn getKeyboardBrightness() -> f32 {
         return 0.0;
     }
 
-    let mut brightness = outputValues[0];
+    let brightness = outputValues[0];
     let fBrightness = (brightness as f32) / (0xfff as f32);
     return fBrightness;
 }
