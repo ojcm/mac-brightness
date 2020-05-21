@@ -15,14 +15,14 @@ use bindings::{
 };
 
 const kGetLEDBrightnessID: u32 = 1;
+const kSetLEDBrightnessID: u32 = 2;
 
 #[no_mangle]
 pub extern "C" fn print_brightness(val: f32) {
     println!("Current brightness: {}", val)
 }
 
-#[no_mangle]
-pub extern "C" fn getDataPort() -> io_connect_t {
+fn getDataPort() -> io_connect_t {
     let mut dataPort: io_connect_t = 0;
 
     // Look up a registered IOService object whose class is AppleLMUController
@@ -79,4 +79,33 @@ pub extern "C" fn getKeyboardBrightness() -> f32 {
     let mut brightness = outputValues[0];
     let fBrightness = (brightness as f32) / (0xfff as f32);
     return fBrightness;
+}
+
+#[no_mangle]
+pub extern "C" fn setKeyboardBrightness(new_brightness: f32) {
+    // kern_return_t kr;
+
+    let inputCount: u32 = 2;
+    let inputValues: [u64; 2] = [
+        0, // Unknown input
+        (new_brightness * (0xfff as f32)) as u64
+    ];
+
+    let mut outputCount: u32 = 1;
+    // Dangerously assume that we'll never get more than 10 output values.
+    let mut outputValues: [u64; 10] = [0; 10];
+
+    let kr = unsafe{IOConnectCallScalarMethod(
+        getDataPort(),
+        kSetLEDBrightnessID,
+        &inputValues[0],
+        inputCount,
+        &mut outputValues[0],
+        &mut outputCount
+    )};
+
+    if kr != KERN_SUCCESS.try_into().unwrap() {
+        println!("setKeyboardBrightness() error");
+        return;
+    }
 }
